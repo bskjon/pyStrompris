@@ -1,0 +1,122 @@
+[
+    {
+        "EUR_per_kWh": 0.0975,
+        "NOK_per_kWh": 1.01886,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09713,
+        "NOK_per_kWh": 1.01499,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09788,
+        "NOK_per_kWh": 1.02283,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09833,
+        "NOK_per_kWh": 1.02753,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09839,
+        "NOK_per_kWh": 1.02816,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09788,
+        "NOK_per_kWh": 1.02283,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09834,
+        "NOK_per_kWh": 1.02763,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09009,
+        "NOK_per_kWh": 0.94142,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09439,
+        "NOK_per_kWh": 0.98636,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09998,
+        "NOK_per_kWh": 1.04477,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09695000000000001,
+        "NOK_per_kWh": 1.01311,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.08769,
+        "NOK_per_kWh": 0.91634,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.05823,
+        "NOK_per_kWh": 0.60849,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.05,
+        "NOK_per_kWh": 0.52249,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.05475,
+        "NOK_per_kWh": 0.57213,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.08061,
+        "NOK_per_kWh": 0.84236,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09629,
+        "NOK_per_kWh": 1.00621,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09894,
+        "NOK_per_kWh": 1.0339,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.0995,
+        "NOK_per_kWh": 1.03976,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09986,
+        "NOK_per_kWh": 1.04352,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09628,
+        "NOK_per_kWh": 1.00611,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09204999999999999,
+        "NOK_per_kWh": 0.9619,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.09,
+        "NOK_per_kWh": 0.94048,
+        "EXR": 10.4498
+    },
+    {
+        "EUR_per_kWh": 0.06005,
+        "NOK_per_kWh": 0.62751,
+        "EXR": 10.4498
+    }
+]

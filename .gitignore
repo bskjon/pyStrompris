@@ -1,0 +1,7 @@
+__pycache__
+build/
+dist/
+pyStrompris.egg-info/
+strompris/__pycache__
+tests/__pycache__
+.pytest_cache

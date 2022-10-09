@@ -1,6 +1,6 @@
 
 from datetime import datetime
-from typing import Final, List, Optional, final
+from typing import Any, Final, List, Optional, final
 from .schemas import *
 from .common import *
 from .PriceSource import *
@@ -79,21 +79,21 @@ class Strompris(Common):
     def get_current_price(self) -> Optional[Prising]:
         return self.sync(self.async_get_current_price())
                 
-    async def async_get_current_price_attrs(self) -> Optional[PriceAttr]:
+    async def async_get_current_price_attrs(self) -> dict[str, Any]:
         now = await self.async_get_current_price()
         common = Common()
-        return PriceAttr(
-            start=now.start,
-            end=now.slutt,
-            kwh=now.kwh,
-            tax=now.tax,
-            total=now.total,
-            max=common.getMax(self.priceSource._price_today),
-            avg=common.getAverage(self.priceSource._price_today),
-            min=common.getMin(self.priceSource._price_today),
-            price_level=common.getPriceLevel(now, self.priceSource._price_today)
-        )
+        return {
+            "start": now.start.isoformat(),
+            "end": now.slutt.isoformat(),
+            "kwh": now.kwh,
+            "tax": now.tax,
+            "total": now.total,
+            "max": common.getMax(self.priceSource._price_today),
+            "avg": common.getAverage(self.priceSource._price_today),
+            "min": common.getMin(self.priceSource._price_today),
+            "price_level": common.getPriceLevel(now, self.priceSource._price_today)
+        }
     
-    def get_current_price_attrs(self) -> Optional[PriceAttr]:
+    def get_current_price_attrs(self) -> dict[str, Any]:
         return self.sync(self.async_get_current_price_attrs())
     

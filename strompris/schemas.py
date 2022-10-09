@@ -53,27 +53,3 @@ class Prising():
         yield "exr", self.exr,
         yield "tax", self.tax
         yield "total", self.total
-
-
-class PriceAttr():
-    start: datetime
-    end: datetime
-    kwh: float
-    tax: float
-    total: float
-    max: float
-    avg: float
-    min: float
-    price_level: str
-    
-    def __init__(self, start: datetime, end: datetime, kwh: float, tax: float, total: float, max: float, avg: float, min: float, price_level: str) -> None:
-        self.start = start
-        self.end = end
-        self.kwh = kwh
-        self.tax = tax
-        self.total = total
-        self.max = max
-        self.avg = avg
-        self.min = min
-        self.price_level = price_level
-    

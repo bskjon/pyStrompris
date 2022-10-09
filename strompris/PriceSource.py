@@ -111,7 +111,7 @@ class Hvakosterstrommen(PriceSource):
                 self._price_tomorrow.clear()
         
         if (getNorwayTime().hour < 13):
-            raise Exception("Strømpris har ikke blitt satt enda.")
+            raise PriceNotAvailable("Strømpris har ikke blitt satt enda.")
         
         url = self.byggApiUrl(dato=tomorrow)
         data = await self.async_fetch_price_data(url=url)

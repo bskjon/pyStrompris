@@ -24,43 +24,63 @@ class Strompris(Common):
         print("NO4", "Nord-Norge")
         print("NO5", "Vest-Norge")
         
-    async def async_getElPrices(self, withFuture: bool = True) -> list[Prising]:
-        prices: list[Prising] = []
-                
-        _for_today = await self.priceSource.async_fetch_for_today()
-        if (_for_today is not None):
-            prices.extend(_for_today)
-        if (withFuture):
-            try:
-                _for_tomorrow = await self.priceSource.async_fetch_for_tomorrow()
-                if (_for_tomorrow is not None):
-                    prices.extend(_for_tomorrow)
-            except PriceNotAvailable:
-                print("Price data is not available for tomorrow")
-                    
+    def _apply_tax(self, prices:list[Prising]) -> None:
+        """Applies tax to items in list."""    
         if (self.priceSource._price_zone != 4):
             """Price Zone NO4 is not subjected to Electricity Tax as of now"""
             for price in prices:
                 price.tax = self.getTax(price.kwh) 
                 price.total = price.kwh + price.tax
         
-        return prices
+    async def async_get_prices_for_today(self) -> list[Prising]:
+        today = await self.priceSource.async_fetch_for_today()
+        if (today is None):
+            return []              
+        self._apply_tax(today)
+        return today 
+    
+    async def async_get_prices_for_tomorrow(self) -> list[Prising]:
+        try:
+            tomorrow = await self.priceSource.async_fetch_for_tomorrow()
+            if (tomorrow is None):
+                return []
+            self._apply_tax(tomorrow)
+            return tomorrow   
+        except PriceNotAvailable:
+            print("Price data is not available for tomorrow")
+        return []
         
-    def getElPrices(self, withFuture: bool = True) -> list[Prising]:
-        return self.sync(self.async_getElPrices(withFuture=withFuture))
+    async def async_get_available_prices(self) -> list[Prising]:    
+        """Fetches prices for today + tomorrow (if available)
+
+        Returns:
+            list[Prising]: Prices
+        """
+        today = await self.async_get_prices_for_today()
+        tomorrow = await self.async_get_prices_for_tomorrow()
+        return (today + tomorrow)
         
-    async def async_getElPriceNow(self) -> Optional[Prising]:
+    def get_prices_for_today(self) -> list[Prising]:
+        return self.sync(self.async_get_prices_for_today())
+    
+    def get_prices_for_tomorrow(self) -> list[Prising]:
+        return self.sync(self.async_get_prices_for_tomorrow())
+    
+    def get_available_prices(self) -> list[Prising]:    
+        today = self.get_prices_for_today()
+        tomorrow = self.get_prices_for_tomorrow()
+        return (today + tomorrow)
+    
+    async def async_get_current_price(self) -> Optional[Prising]:
         if (not self.priceSource._price_today or len(self.priceSource._price_today) == 0):
-            await self.async_getElPrices(withFuture=False)
+            await self.async_get_prices_for_today()
         return next((x for x in self.priceSource._price_today if x.start.hour == getNorwayTime().hour), [None])
         
-    def getElPriceNow(self) -> Optional[Prising]:
-        if (not self.priceSource._price_today or len(self.priceSource._price_today) == 0):
-            self.sync(self.async_getElPriceNow())
-        return self.sync(self.async_getElPriceNow())
-        
-    def getPriceAttrs(self) -> Optional[PriceAttr]:
-        now = self.getElPriceNow()
+    def get_current_price(self) -> Optional[Prising]:
+        return self.sync(self.async_get_current_price())
+                
+    async def async_get_current_price_attrs(self) -> Optional[PriceAttr]:
+        now = await self.async_get_current_price()
         common = Common()
         return PriceAttr(
             start=now.start,
@@ -73,4 +93,7 @@ class Strompris(Common):
             min=common.getMin(self.priceSource._price_today),
             price_level=common.getPriceLevel(now, self.priceSource._price_today)
         )
+    
+    def get_current_price_attrs(self) -> Optional[PriceAttr]:
+        return self.sync(self.async_get_current_price_attrs())
     

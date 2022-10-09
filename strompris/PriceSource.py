@@ -7,9 +7,12 @@ from strompris.common import getNorwayTime
 
 class PriceSource():
     
+    _price_zone: int
     _price_today: list[Prising] = []
     _price_tomorrow: list[Prising] = []
     
+    def __init__(self, price_zone: int) -> None:
+        self._price_zone = price_zone
                 
     async def async_fetch_price_data(self, url, timeout: int = 30) -> Optional[List[dict]]:
         """Calls external endopoint by url and deserializes json response 
@@ -34,27 +37,25 @@ class PriceSource():
                 else:
                     return None
     
-    async def async_fetch_for_today(self, zone: int) -> Optional[List[Prising]]:
+    async def async_fetch_for_today(self) -> Optional[List[Prising]]:
         return None
     
-    async def async_fetch_for_tomorrow(self, zone: int) -> Optional[List[Prising]]:
+    async def async_fetch_for_tomorrow(self) -> Optional[List[Prising]]:
         return None
         
 
 class Hvakosterstrommen(PriceSource):
-
-    
-    
     
     api_url: Final[str] = "https://www.hvakosterstrommen.no/api/v1/prices/"
     
-    def __init__(self) -> None:
-        pass
+
+    def __init__(self, price_zone: int) -> None:
+        super().__init__(price_zone)
     
     
     @final
-    def byggApiUrl(self, sone: int, dato: datetime):
-        return self.api_url + "{dtp}_NO{soneNr}.json".format(dtp = dato.strftime("%Y/%m-%d"), soneNr=str(sone))
+    def byggApiUrl(self, dato: datetime):
+        return self.api_url + "{dtp}_NO{soneNr}.json".format(dtp = dato.strftime("%Y/%m-%d"), soneNr=str(self._price_zone))
         
 
         
@@ -72,8 +73,11 @@ class Hvakosterstrommen(PriceSource):
             prisPeriode.append(prising)
         return prisPeriode
        
-    async def async_fetch_for_today(self, zone: int) -> list[Prising]:
-        url = self.byggApiUrl(sone=zone, dato=getNorwayTime())
+    async def async_fetch_for_today(self) -> list[Prising]:
+        if (not self._price_today and len(self._price_today) != 0 and self._price_today[0].start.day == getNorwayTime().day):
+            return self._price_today
+        
+        url = self.byggApiUrl(dato=getNorwayTime())
         data = await self.async_fetch_price_data(url=url)
         if (data is None):
             return []
@@ -81,12 +85,16 @@ class Hvakosterstrommen(PriceSource):
             self._price_today = await self._map_response(data)
             return self._price_today
     
-    async def async_fetch_for_tomorrow(self, zone: int) -> list[Prising]:
+    async def async_fetch_for_tomorrow(self) -> list[Prising]:
+        tomorrow = getNorwayTime() + timedelta(days=1)
+        
+        if (not self._price_tomorrow and len(self._price_tomorrow) != 0 and self._price_tomorrow[0].start.day == tomorrow.day):
+            return self._price_tomorrow
+        
         if (getNorwayTime().hour < 13):
             raise Exception("Strømpris har ikke blitt satt enda.")
-        nyTid = getNorwayTime() + timedelta(days=1)
         
-        url = self.byggApiUrl(sone=zone, dato=nyTid)
+        url = self.byggApiUrl(dato=tomorrow)
         data = await self.async_fetch_price_data(url=url)
         if (data is None):
             return []

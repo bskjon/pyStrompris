@@ -61,3 +61,10 @@ class TestCommon(unittest.TestCase):
         for price in expensive:
             self.assertFalse(self.common.isCheap(price, self.today), "Price {kwhCost} is identified as Cheap @ {hour}, and threshold is {threshold}".format(hour=price.start.hour, kwhCost=price.kwh, threshold=self.common._isCheapThreshold(self.today)))
             self.assertTrue(self.common.isExpensive(price, self.today), "Price {kwhCost} is not identified as Expensive, and is {threshold}".format(kwhCost=price.kwh, threshold=self.common._isCheapThreshold(self.today)))
+            
+            
+    def test_defaultsToAverage(self):
+        average = list(filter(lambda p: p.start.hour <= 6, self.today))
+        avg_2 = list(filter(lambda p: p.start.hour >= 19 and p.start.hour <= 21, self.today))
+        average.extend(avg_2)
+        self.assertFalse(self.common.isSpreadOk(self.today), "Price spread for passed prices does not qualify for defaulting to Average on {kwhCost}".format(kwhCost=self.common.getSpread(average)))

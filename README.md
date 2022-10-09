@@ -10,10 +10,10 @@ Supported sources:
 from strompris.strompris import Strompris 
 from strompris.const import SOURCE_HVAKOSTERSTROMMEN
 
-strompris = Strompris(SOURCE_HVAKOSTERSTROMMEN) # Can also be used with direct string
+strompris = Strompris(source=SOURCE_HVAKOSTERSTROMMEN, zone=1) # Can also be used with direct string # Zone 1-5
 
-"""Returns pricing for today and tomorrow if available on NO1 price zone"""
-priser = strompris.getElPriceFromSource(zone=1, withFuture=True) # Zone 1-5
+"""Returns pricing for today and tomorrow if available"""
+priser = strompris.getElPriceFromSource(withFuture=True) 
 
 """Returns pricing for current hour using GMT+1|+2"""
 now = strompris.getElPriceNow(zone=1)

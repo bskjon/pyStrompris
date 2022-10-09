@@ -68,6 +68,14 @@ class Common():
         """
         return min(p.kwh for p in prices)
     
+    def getSpread(self, prices: list[Prising]) -> float:
+        return abs(self.getMax(prices=prices) - self.getMin(prices=prices))
+    
+    def isSpreadOk(self, prices: list[Prising]) -> bool:
+        if self.getSpread(prices=prices) >= 0.5:
+            return True
+        return False
+    
     def isVeryExpensive(self, now: Prising, prices: list[Prising]) -> bool:
         return now.kwh > 0.9 * self.getMax(prices=prices)
     
@@ -87,6 +95,10 @@ class Common():
         return now.kwh < 1.2 * self.getMin(prices=prices)
     
     def getPriceLevel(self, now: Prising, prices: list[Prising]) -> str:
+        if self.isSpreadOk(prices=prices) == False:
+            return self.COST_LEVEL__AVERAGE
+            
+        
         if self.isVeryExpensive(now = now, prices = prices):
             return self.COST_LEVEL__VERY_EXPENSIVE
         

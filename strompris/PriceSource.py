@@ -74,8 +74,16 @@ class Hvakosterstrommen(PriceSource):
         return prisPeriode
        
     async def async_fetch_for_today(self) -> list[Prising]:
-        if (not self._price_today and len(self._price_today) != 0 and self._price_today[0].start.day == getNorwayTime().day):
-            return self._price_today
+        """Fetches electricity prices for today. Will return stored prices if day matches today.
+
+        Returns:
+            list[Prising]: El prices for today
+        """
+        if (not self._price_today and len(self._price_today) != 0):
+            if (self._price_today[0].start.day == getNorwayTime().day):
+                return self._price_today
+            else:
+                self._price_today.clear()
         
         url = self.byggApiUrl(dato=getNorwayTime())
         data = await self.async_fetch_price_data(url=url)
@@ -86,10 +94,21 @@ class Hvakosterstrommen(PriceSource):
             return self._price_today
     
     async def async_fetch_for_tomorrow(self) -> list[Prising]:
+        """Fetches electricity prices for today. Will return stored prices if day matches tomorrow.
+
+        Raises:
+            Exception: Raises exception if prices for tomorrow is called before 1300, as prices will be available at or after.
+
+        Returns:
+            list[Prising]: El prices for tomorrow
+        """
         tomorrow = getNorwayTime() + timedelta(days=1)
         
-        if (not self._price_tomorrow and len(self._price_tomorrow) != 0 and self._price_tomorrow[0].start.day == tomorrow.day):
-            return self._price_tomorrow
+        if (not self._price_tomorrow and len(self._price_tomorrow) != 0):
+            if (self._price_tomorrow[0].start.day == tomorrow.day):
+                return self._price_tomorrow
+            else:
+                self._price_tomorrow.clear()
         
         if (getNorwayTime().hour < 13):
             raise Exception("Strømpris har ikke blitt satt enda.")

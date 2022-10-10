@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+from typing import Any
 import pytz
 from .schemas import *
 
@@ -12,7 +13,7 @@ class Common():
     COST_LEVEL__EXPENSIVE       = "EXPENSIVE"
     COST_LEVEL__AVERAGE         = "AVERAGE"
     COST_LEVEL__CHEAP           = "CHEAP"
-    COST_LEVEL__VERY_CHEAP      = "VERY_EXPENSIVE"
+    COST_LEVEL__VERY_CHEAP      = "VERY_CHEAP"
     
     
     def __init__(self) -> None:
@@ -112,4 +113,17 @@ class Common():
             return self.COST_LEVEL__VERY_CHEAP
         
         return self.COST_LEVEL__AVERAGE
+    
+    def get_price_attrs(self, price: Prising, prices: list[Prising]) -> dict[str, Any]:
+        return {
+            "start": price.start.isoformat(),
+            "end": price.slutt.isoformat(),
+            "kwh": price.kwh,
+            "tax": price.tax,
+            "total": price.total,
+            "max": self.getMax(prices),
+            "avg": self.getAverage(prices),
+            "min": self.getMin(prices),
+            "price_level": self.getPriceLevel(price, prices)
+        }
         

@@ -94,6 +94,23 @@ class Strompris(Common):
             "price_level": common.getPriceLevel(now, self.priceSource._price_today)
         }
     
+    async def async_get_price_attrs(self, price: Prising) -> dict[str, Any]:
+        common = Common()
+        return {
+            "start": price.start.isoformat(),
+            "end": price.slutt.isoformat(),
+            "kwh": price.kwh,
+            "tax": price.tax,
+            "total": price.total,
+            "max": common.getMax(self.priceSource._price_today),
+            "avg": common.getAverage(self.priceSource._price_today),
+            "min": common.getMin(self.priceSource._price_today),
+            "price_level": common.getPriceLevel(price, self.priceSource._price_today)
+        }
+    
     def get_current_price_attrs(self) -> dict[str, Any]:
         return self.sync(self.async_get_current_price_attrs())
+    
+    def get_price_attrs(self, price: Prising) -> dict[str, Any]:
+        return self.sync(self.async_get_price_attrs(price))
     

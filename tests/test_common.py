@@ -3,15 +3,18 @@ from strompris import common
 from strompris.schemas import Prising
 from tests.helper import MockPriceSource, sync
 from strompris.common import Common
+from strompris.strompris import Strompris
 
 
 class TestCommon(unittest.TestCase):
     common = Common()
     today: list[Prising] = []
+    tomorrow: list[Prising] = []
     
     def __init__(self, methodName: str = ...) -> None:
         super().__init__(methodName)
         self.today = MockPriceSource().fetch_for_today()
+        self.tomorrow = MockPriceSource().fetch_for_tomorrow()
     
     def test_getMax(self):
         assert self.common.getMax(prices=self.today) == 0.711
@@ -68,3 +71,24 @@ class TestCommon(unittest.TestCase):
         avg_2 = list(filter(lambda p: p.start.hour >= 19 and p.start.hour <= 21, self.today))
         average.extend(avg_2)
         self.assertFalse(self.common.isSpreadOk(self.today), "Price spread for passed prices does not qualify for defaulting to Average on {kwhCost}".format(kwhCost=self.common.getSpread(average)))
+        
+
+        
+    def test_onlyVeryCheapIsTrue(self):
+        now = next(p for p in self.tomorrow if p.kwh == self.common.getMin(self.tomorrow))
+        
+        assert self.common.isVeryExpensive(now, self.tomorrow) is False
+        assert self.common.isExpensive(now, self.tomorrow) is False
+        self.assertTrue(self.common.isCheap(now, self.tomorrow), "Price {kwhCost} is not identified as Cheap, and threshold is {threshold}".format(kwhCost=now.kwh, threshold=self.common._isCheapThreshold(self.today)))
+        self.assertTrue(self.common.isVeryCheap(now, self.tomorrow), "Price {kwhCost} is not identified as Very Cheap, and threshold is {threshold}".format(kwhCost=now.kwh, threshold=self.common._isCheapThreshold(self.today)))
+        
+    def test_tomorrowHasAtleastOneVeryCheap(self):
+        attrs = []
+        for price in self.tomorrow:
+            attr = self.common.get_price_attrs(price, self.tomorrow)
+            print(attr["price_level"])
+            attrs.append(attr)
+        
+        veryCheap = list(filter(lambda a: a["price_level"] == self.common.COST_LEVEL__VERY_CHEAP, attrs))
+        self.assertTrue(len(veryCheap) != 0, "There is no entries that are very cheap..")
+        print(veryCheap)

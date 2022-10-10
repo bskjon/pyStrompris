@@ -11,3 +11,8 @@ for p in priser:
 print("\nPrice now is: ", pris.get_current_price().__dict__())
 
 print("Attrs", json.dumps(pris.get_current_price_attrs()))
+
+print(" --- ")
+print("Price + Levels")
+for p in priser:
+    print(pris.get_price_attrs(p))

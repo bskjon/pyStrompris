@@ -1,6 +1,6 @@
 """Constants used by pyStrompris"""
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
 
 SOURCE_HVAKOSTERSTROMMEN = "Hvakosterstrommen"

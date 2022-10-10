@@ -106,11 +106,12 @@ class Common():
         if self.isExpensive(now = now, prices = prices):
             return self.COST_LEVEL__EXPENSIVE
         
+        if self.isVeryCheap(now = now, prices = prices):
+            return self.COST_LEVEL__VERY_CHEAP
+        
         if self.isCheap(now = now, prices = prices):
             return self.COST_LEVEL__CHEAP
         
-        if self.isVeryCheap(now = now, prices = prices):
-            return self.COST_LEVEL__VERY_CHEAP
         
         return self.COST_LEVEL__AVERAGE
     

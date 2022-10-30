@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 import aiohttp
 import json
@@ -63,13 +64,22 @@ class Hvakosterstrommen(PriceSource):
         prisPeriode: List[Prising] = []
         for pris in respons:
             indeks = respons.index(pris)
-            startTid = getNorwayTime().replace(hour=indeks, minute=0, second=0, microsecond=0)
-            if (isToday != True):
-                startTid += timedelta(days=1) 
+            periode: Periode
             
-            sluttTid = startTid + timedelta(hours=1)
-            periode = Periode(start=startTid, slutt=sluttTid)
+            if ('time_start' in pris and 'time_end' in pris):
+                startTid = datetime.fromisoformat(pris['time_start'])
+                endTime = datetime.fromisoformat(pris['time_end'])
+                periode = Periode(start=startTid, slutt=endTime)
+            else:
+                if (indeks <= 23):
+                    startTid = getNorwayTime().replace(hour=indeks, minute=0, second=0, microsecond=0)
+                    if (isToday != True):
+                        startTid += timedelta(days=1) 
+                    sluttTid = startTid + timedelta(hours=1)
+                    periode = Periode(start=startTid, slutt=sluttTid)
+                    
             prising = Prising(periode=periode, data=pris)
+                
             prisPeriode.append(prising)
         return prisPeriode
        

@@ -11,13 +11,13 @@ class Periode():
         self.slutt_tid = slutt
 
 
-class Prising():
+class Pris():
     start: datetime
     slutt: datetime
-    NOK_kwh: float
-    EUR_kwh: float
-    kwh: float # Defaults to NOK
-    exr: float # Exchange Rate
+    NOK_kwh: float = 0
+    EUR_kwh: float = 0
+    kwh: float = 0 # Defaults to NOK
+    exr: float = 0 # Exchange Rate
     tax: float = 0.0
     total: float = 0.0
     
@@ -42,7 +42,7 @@ class Prising():
         }
         
     def __repr__(self):
-        return json.dumps(self.__dict__)
+        return json.dumps(self.__dict__(), indent=4, default=str)
 
     def __iter__(self):
         yield "start", self.start,

@@ -1,15 +1,15 @@
 import unittest
 from strompris import common
-from strompris.schemas import Prising
-from tests.helper import MockPriceSource, sync
+from strompris.schemas import Pris
+from MockPriceSource import MockPriceSource, sync
 from strompris.common import Common
 from strompris.strompris import Strompris
 
 
 class TestCommon(unittest.TestCase):
     common = Common()
-    today: list[Prising] = []
-    tomorrow: list[Prising] = []
+    today: list[Pris] = []
+    tomorrow: list[Pris] = []
     
     def __init__(self, methodName: str = ...) -> None:
         super().__init__(methodName)
@@ -55,7 +55,7 @@ class TestCommon(unittest.TestCase):
             self.assertFalse(self.common.isExpensive(price, self.today), "Price {kwhCost} is identified as Expensive".format(kwhCost=price.kwh))
             
     def test_pricesAreOnlyExpensive(self):
-        expensive: list[Prising] = []
+        expensive: list[Pris] = []
         exp_1 = list(filter(lambda p: p.start.hour >= 7 and p.start.hour <= 10, self.today))
         exp_2 = list(filter(lambda p: p.start.hour >= 22, self.today))
         expensive.extend(exp_1)

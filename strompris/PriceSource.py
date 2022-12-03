@@ -8,9 +8,9 @@ from strompris.common import getNorwayTime
 
 class PriceSource():
     
-    _price_zone: int
-    _price_today: list[Prising] = []
-    _price_tomorrow: list[Prising] = []
+    _price_zone: int = 0
+    _price_today: list[Pris] = []
+    _price_tomorrow: list[Pris] = []
     
     def __init__(self, price_zone: int) -> None:
         self._price_zone = price_zone
@@ -38,10 +38,10 @@ class PriceSource():
                 else:
                     return None
     
-    async def async_fetch_for_today(self) -> Optional[List[Prising]]:
+    async def async_fetch_for_today(self) -> Optional[List[Pris]]:
         return None
     
-    async def async_fetch_for_tomorrow(self) -> Optional[List[Prising]]:
+    async def async_fetch_for_tomorrow(self) -> Optional[List[Pris]]:
         return None
         
 
@@ -60,8 +60,8 @@ class Hvakosterstrommen(PriceSource):
         
 
         
-    async def _map_response(self, respons: List[dict], isToday = True) -> List[Prising]:
-        prisPeriode: List[Prising] = []
+    async def _map_response(self, respons: List[dict], isToday = True) -> List[Pris]:
+        prisPeriode: List[Pris] = []
         for pris in respons:
             indeks = respons.index(pris)
             periode: Periode
@@ -78,12 +78,11 @@ class Hvakosterstrommen(PriceSource):
                     sluttTid = startTid + timedelta(hours=1)
                     periode = Periode(start=startTid, slutt=sluttTid)
                     
-            prising = Prising(periode=periode, data=pris)
-                
+            prising = Pris(periode=periode, data=pris)
             prisPeriode.append(prising)
         return prisPeriode
        
-    async def async_fetch_for_today(self) -> list[Prising]:
+    async def async_fetch_for_today(self) -> list[Pris]:
         """Fetches electricity prices for today. Will return stored prices if day matches today.
 
         Returns:
@@ -103,7 +102,7 @@ class Hvakosterstrommen(PriceSource):
             self._price_today = await self._map_response(data)
             return self._price_today
     
-    async def async_fetch_for_tomorrow(self) -> list[Prising]:
+    async def async_fetch_for_tomorrow(self) -> list[Pris]:
         """Fetches electricity prices for today. Will return stored prices if day matches tomorrow.
 
         Raises:

@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 import pytz
 from .schemas import *
 
@@ -32,10 +32,12 @@ class Common():
         Returns:
             float: Tax
         """
+        if (taxPercentage == 0 or price is None):
+            return 0
         tax = (price * (taxPercentage / 100))
         return tax
                 
-    def getAverage(self, prices: list[Prising]) -> float:
+    def getAverage(self, prices: list[Pris]) -> Optional[float]:
         """Returns average of prices list
 
         Args:
@@ -44,10 +46,12 @@ class Common():
         Returns:
             float: Average price
         """
+        if (len(prices) == 0):
+            return None
         summed = sum(p.kwh for p in prices)
         return summed / len(prices)
     
-    def getMax(self, prices: list[Prising]) -> float:
+    def getMax(self, prices: list[Pris]) -> Optional[float]:
         """Returns max of prices list
 
         Args:
@@ -56,9 +60,11 @@ class Common():
         Returns:
             float: Max price
         """
+        if (len(prices) == 0):
+            return None
         return max(p.kwh for p in prices)
     
-    def getMin(self, prices: list[Prising]) -> float:
+    def getMin(self, prices: list[Pris]) -> Optional[float]:
         """Returns min of prices list
 
         Args:
@@ -67,35 +73,37 @@ class Common():
         Returns:
             float: Min price
         """
+        if (len(prices) == 0):
+            return None
         return min(p.kwh for p in prices)
     
-    def getSpread(self, prices: list[Prising]) -> float:
+    def getSpread(self, prices: list[Pris]) -> float:
         return abs(self.getMax(prices=prices) - self.getMin(prices=prices))
     
-    def isSpreadOk(self, prices: list[Prising]) -> bool:
+    def isSpreadOk(self, prices: list[Pris]) -> bool:
         if self.getSpread(prices=prices) >= 0.5:
             return True
         return False
     
-    def isVeryExpensive(self, now: Prising, prices: list[Prising]) -> bool:
+    def isVeryExpensive(self, now: Pris, prices: list[Pris]) -> bool:
         return now.kwh > 0.9 * self.getMax(prices=prices)
     
-    def isExpensive(self, now: Prising, prices: list[Prising]) -> bool:
+    def isExpensive(self, now: Pris, prices: list[Pris]) -> bool:
         return now.kwh > 0.75 * self.getMax(prices=prices)
     
-    def _isExpensiveThreadhold(self, prices: list[Prising]) -> bool:
+    def _isExpensiveThreadhold(self, prices: list[Pris]) -> bool:
         return 0.75 * self.getMax(prices=prices)
     
-    def _isCheapThreshold(self, prices: list[Prising]) -> bool:
+    def _isCheapThreshold(self, prices: list[Pris]) -> bool:
         return 1.6 * self.getMin(prices=prices)
     
-    def isCheap(self, now: Prising, prices: list[Prising]) -> bool:
+    def isCheap(self, now: Pris, prices: list[Pris]) -> bool:
         return now.kwh < 1.45 * self.getMin(prices=prices)
     
-    def isVeryCheap(self, now: Prising, prices: list[Prising]) -> bool:
+    def isVeryCheap(self, now: Pris, prices: list[Pris]) -> bool:
         return now.kwh < 1.2 * self.getMin(prices=prices)
     
-    def getPriceLevel(self, now: Prising, prices: list[Prising]) -> str:
+    def getPriceLevel(self, now: Pris, prices: list[Pris]) -> str:
         if self.isSpreadOk(prices=prices) == False:
             return self.COST_LEVEL__AVERAGE
             
@@ -115,7 +123,7 @@ class Common():
         
         return self.COST_LEVEL__AVERAGE
     
-    def get_price_attrs(self, price: Prising, prices: list[Prising]) -> dict[str, Any]:
+    def get_price_attrs(self, price: Pris, prices: list[Pris]) -> dict[str, Any]:
         return {
             "start": price.start.isoformat(),
             "end": price.slutt.isoformat(),

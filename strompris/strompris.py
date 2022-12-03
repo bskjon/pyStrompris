@@ -80,27 +80,31 @@ class Strompris(Common):
     async def async_get_current_price(self) -> Optional[Pris]:
         if (not self.priceSource._price_today or len(self.priceSource._price_today) == 0):
             await self.async_get_prices_for_today()
-        return next((x for x in self.priceSource._price_today if x.start.hour == getNorwayTime().hour), [None])
+        return next((x for x in self.priceSource._price_today if x.start.hour == getNorwayTime().hour), None)
         
     def get_current_price(self) -> Optional[Pris]:
         return self.sync(self.async_get_current_price())
                 
-    async def async_get_current_price_attrs(self) -> dict[str, Any]:
-        now = await self.async_get_current_price()
+    async def async_get_price_attrs(self, price: Pris = None, prices: List[Pris] = None) -> dict[str, Any]:
+        if (price is None):
+            price = await self.async_get_current_price()
+        if (prices is None or len(prices) == 0):
+            prices = self.priceSource._price_today
+        
         common = Common()
         max = common.getMax(self.priceSource._price_today)
         avg = common.getAverage(self.priceSource._price_today)
         min =  common.getMin(self.priceSource._price_today)
         return {
-            "start": now.start.isoformat(),
-            "end": now.slutt.isoformat(),
-            "kwh": now.kwh,
-            "tax": now.tax,
-            "total": now.total,
+            "start": price.start.isoformat(),
+            "end": price.slutt.isoformat(),
+            "kwh": price.kwh,
+            "tax": price.tax,
+            "total": price.total,
             "max": max + common.getTax(max, self.getTaxPercentage()),
             "avg": avg + common.getTax(avg, self.getTaxPercentage()),
             "min": min + common.getTax(min, self.getTaxPercentage()),
-            "price_level": common.getPriceLevel(now, self.priceSource._price_today)
+            "price_level": common.getPriceLevel(price, self.priceSource._price_today)
         }
      
     async def async_get_price_tomorrow_attrs(self) -> dict[str, Any]:
@@ -115,10 +119,10 @@ class Strompris(Common):
         }
     
     def get_current_price_attrs(self) -> dict[str, Any]:
-        return self.sync(self.async_get_current_price_attrs())
+        return self.sync(self.async_get_price_attrs())
     
-    def get_price_attrs(self, price: Pris) -> dict[str, Any]:
-        return self.sync(self.async_get_price_attrs(price))
+    def get_price_attrs(self, price: Pris, prices: List[Pris]) -> dict[str, Any]:
+        return self.sync(self.async_get_price_attrs(price, prices))
     
     
     def __get_avg(self, prices: List[Pris]) -> float:

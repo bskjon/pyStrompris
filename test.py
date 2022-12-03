@@ -23,3 +23,6 @@ print("\n\nTomorrow")
 sync(tts.test_async_priceTomorrowLevel())
 print("\n\nWith big changes")
 sync(tts.test_async_priceBigChangesLevel())
+
+sync(tts.test_async_priceTest4())
+sync(tts.test_today_current_price_attrs())

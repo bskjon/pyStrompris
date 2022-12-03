@@ -56,6 +56,12 @@ class TestStrompris(unittest.IsolatedAsyncioTestCase, Strompris):
         
 
     @pytest.mark.asyncio
+    async def test_today_current_price_attrs(self):
+        attr = await self.async_get_price_attrs()
+        assert attr['start'] != None 
+        
+
+    @pytest.mark.asyncio
     async def test_async_priceBigChangesLevel(self):
         common = Common()
         prices = await self.source.async_fetch_for_spesific_record(0)
@@ -78,5 +84,19 @@ class TestStrompris(unittest.IsolatedAsyncioTestCase, Strompris):
         for price in drop:
             level = common.getPriceLevel(price, prices)
             assert level == common.COST_LEVEL__VERY_CHEAP
+            
+    @pytest.mark.asyncio
+    async def test_async_priceTest4(self):
+        common = Common()
+        prices = await self.source.async_fetch_for_spesific_record(4)
+        self._apply_tax(prices)
+                
+        for price in prices:
+            level = common.getPriceLevel(price, prices)
+            print(price.total, level)
+            
+        inc = await self.async_get_extreme_price_increases(prices)
+        assert len(inc) > 0
+        
         
         

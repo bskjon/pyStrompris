@@ -17,7 +17,8 @@ class MockPriceSource(Hvakosterstrommen):
         "2022-09-20_NO1.json",
         "2022-10-08_NO1.json",
         "2022-10-09_NO1.json",
-        "2022-10-30_NO1.json"
+        "2022-10-30_NO1.json",
+        "2022-12-04_NO1.json"
     ]
     
     def __init__(self, price_zone: int = -1) -> None:
@@ -30,7 +31,8 @@ class MockPriceSource(Hvakosterstrommen):
     
     @pytest.mark.asyncio
     async def async_fetch_for_today(self) -> list[Pris]:
-        return await self._map_response(self.readPriceAsset(self.price_files[1]))
+        self._price_today = await self._map_response(self.readPriceAsset(self.price_files[1]))
+        return self._price_today
     
     @pytest.mark.asyncio
     async def async_fetch_for_tomorrow(self) -> list[Pris]:

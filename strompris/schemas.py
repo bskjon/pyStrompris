@@ -1,6 +1,13 @@
 from datetime import datetime
 import json
 from os import stat
+from typing import List
+
+LEVEL__VERY_EXPENSIVE  = "VERY_EXPENSIVE"
+LEVEL__EXPENSIVE       = "EXPENSIVE"
+LEVEL__AVERAGE         = "AVERAGE"
+LEVEL__CHEAP           = "CHEAP"
+LEVEL__VERY_CHEAP      = "VERY_CHEAP"
 
 class Periode():
     start_tid: datetime
@@ -11,9 +18,9 @@ class Periode():
         self.slutt_tid = slutt
 
 
-class Pris():
-    start: datetime
-    slutt: datetime
+class Pris(object):
+    start: datetime = None
+    slutt: datetime = None
     NOK_kwh: float = 0
     EUR_kwh: float = 0
     kwh: float = 0 # Defaults to NOK
@@ -53,3 +60,21 @@ class Pris():
         yield "exr", self.exr,
         yield "tax", self.tax
         yield "total", self.total
+        
+        
+class PriceLevel(Pris):
+
+    level: str = None
+    def __init__(self) -> None:
+        super(Pris, self).__init__()
+        
+
+class PriceGroups():
+    
+    group: str = None
+    prices: List[PriceLevel] = []
+    
+    def __init__(self, prices: List[PriceLevel], group: str) -> None:
+        self.prices = prices
+        self.group = group
+        

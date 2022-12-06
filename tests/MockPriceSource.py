@@ -18,7 +18,9 @@ class MockPriceSource(Hvakosterstrommen):
         "2022-10-08_NO1.json",
         "2022-10-09_NO1.json",
         "2022-10-30_NO1.json",
-        "2022-12-04_NO1.json"
+        "2022-12-04_NO1.json",
+        "2022-12-06_NO1.json"
+        
     ]
     
     def __init__(self, price_zone: int = -1) -> None:

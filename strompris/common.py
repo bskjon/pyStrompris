@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, List, Optional
 import pytz
 from .schemas import *
 
@@ -97,6 +97,11 @@ class Common():
     def _isCheapThreshold(self, prices: list[Pris]) -> bool:
         return 1.6 * self.getMin(prices=prices)
     
+    def isAverage(self, now: Pris, prices: List[Pris]) -> bool:
+        avg = self.getAverage(prices)
+        return avg * 0.9 <= now.kwh <= avg * 1.1
+    
+    
     def isCheap(self, now: Pris, prices: list[Pris]) -> bool:
         return now.kwh < 1.45 * self.getMin(prices=prices)
     
@@ -104,9 +109,8 @@ class Common():
         return now.kwh < 1.2 * self.getMin(prices=prices)
     
     def getPriceLevel(self, now: Pris, prices: list[Pris]) -> str:
-        if self.isSpreadOk(prices=prices) == False:
+        if self.isSpreadOk(prices=prices) == False or self.isAverage(now = now, prices=prices):
             return self.COST_LEVEL__AVERAGE
-            
         
         if self.isVeryExpensive(now = now, prices = prices):
             return self.COST_LEVEL__VERY_EXPENSIVE

@@ -131,39 +131,78 @@ class Strompris(Common):
         #avg = avg + common.getTax(avg, self.getTaxPercentage())
         return avg
         
-    async def async_get_extreme_price_increases(self, prices: List[Pris]) -> List[Pris]:       
-        """Calculates extreme price tops (1.25x average)
-
-        Args:
-            prices (List[Pris]): Prices to check
-
-        Returns:
-            List[Pris]: List of extreme price increases
+    def get_prices_with_level(self, prices: List[Pris]) -> List[PriceLevel]:  
         """
-        avg = self.__get_avg(prices)
-        threshold = avg * 1.25
+        """  
+        _prices = prices.copy()
+        instanced: List[PriceLevel] = []
+        c = Common()
+        for price in _prices:
+            pl: PriceLevel = price
+            pl.__class__ = PriceLevel
+           # pl.__dict__.update(price.__dict__)
+            pl.level = c.getPriceLevel(price, _prices)
+            instanced.append(pl)
+        return instanced
         
-        tops: List[Pris] = []
-        for price in prices:
-            if (price.kwh > threshold):
-                tops.append(price)
-        return tops
+    def __price_is_cheap(self, price: PriceLevel) -> bool:
+        return price.level == LEVEL__CHEAP or price.level == LEVEL__VERY_CHEAP
     
-    async def async_get_extreme_price_reductions(self, prices: List[Pris]) -> List[Pris]:
-        """Calculates extreme price bottoms (0.75x average)
-
-        Args:
-            prices (List[Pris]): Prices to check
-
-        Returns:
-            List[Pris]: List of extreme price reductions
-        """
-        avg = self.__get_avg(prices)
-        threshold = avg * 0.75
-        bottoms: List[Pris] = []
-        for price in prices:
-            if (price.kwh < threshold):
-                bottoms.append(price)
-        return bottoms        
+    def __price_is_expensive(self, price: PriceLevel) -> bool:
+        return price.level == LEVEL__EXPENSIVE or price.level == LEVEL__VERY_EXPENSIVE
         
+    def get_price_level_grouped(self, prices: List[PriceLevel]) -> List[PriceGroups]:
+        """
+        """
+        result: List[PriceGroups] = []
+        
+        ig: List[PriceLevel] = []
+        for i, price in enumerate(prices):
+            if (price.level == LEVEL__AVERAGE and len(ig) == 0):
+                continue
+            if (any(c.level == LEVEL__VERY_CHEAP or c.level == LEVEL__CHEAP for c in ig)):
+                """List is of cheap"""
+                if (self.__price_is_cheap(price)):
+                    ig.append(price)
+                    continue
+                else:
+                    """If next item is not of cheap, then store ig as a group"""
+                    if (len(ig) > 1):
+                        result.append(PriceGroups(ig, LEVEL__CHEAP))
+                        ig = []
+                    else:
+                        """If item group is smaller or equal to 1 then it will be skipped"""
+                        ig = []
+            
+            elif (any(c.level == LEVEL__EXPENSIVE or c.level == LEVEL__VERY_EXPENSIVE for c in ig)):
+                """List is of expensive"""
+                if (self.__price_is_expensive(price)):
+                    ig.append(price)
+                    continue
+                else:
+                    """"""
+                    if (price.level == LEVEL__AVERAGE and len(prices)-1 > i+1):
+                        """If there is a next item 
+                        and it is of expensive or very expensive then add average to expensicve"""
+                        ni = prices[i+1]
+                        
+                        if (ni != None and self.__price_is_expensive(ni)):
+                            """Since next item is of expensive, do continue"""
+                            ig.append(price)
+                            continue 
+
+                    if (len(ig) > 1):
+                        result.append(PriceGroups(ig, LEVEL__EXPENSIVE))
+                        ig = []
+                    else:
+                        """If item group is smaller or equal to 1 then it will be skipped"""
+                        ig = []
+            
+            
+            if (price.level != LEVEL__AVERAGE and len(ig) == 0):
+                ig.append(price)
+        
+        
+        return result
+                
     

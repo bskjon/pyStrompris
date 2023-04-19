@@ -48,7 +48,7 @@ class Common():
         """
         if (len(prices) == 0):
             return None
-        summed = sum(p.kwh for p in prices)
+        summed = sum(p.total for p in prices)
         return summed / len(prices)
     
     def getMax(self, prices: list[Pris]) -> Optional[float]:
@@ -62,7 +62,7 @@ class Common():
         """
         if (len(prices) == 0):
             return None
-        return max(p.kwh for p in prices)
+        return max(p.total for p in prices)
     
     def getMin(self, prices: list[Pris]) -> Optional[float]:
         """Returns min of prices list
@@ -75,7 +75,7 @@ class Common():
         """
         if (len(prices) == 0):
             return None
-        return min(p.kwh for p in prices)
+        return min(p.total for p in prices)
     
     def getSpread(self, prices: list[Pris]) -> float:
         return abs(self.getMax(prices=prices) - self.getMin(prices=prices))
@@ -86,10 +86,10 @@ class Common():
         return False
     
     def isVeryExpensive(self, now: Pris, prices: list[Pris]) -> bool:
-        return now.kwh > 0.9 * self.getMax(prices=prices)
+        return now.total > 0.9 * self.getMax(prices=prices)
     
     def isExpensive(self, now: Pris, prices: list[Pris]) -> bool:
-        return now.kwh > 0.75 * self.getMax(prices=prices)
+        return now.total > 0.75 * self.getMax(prices=prices)
     
     def _isExpensiveThreadhold(self, prices: list[Pris]) -> bool:
         return 0.75 * self.getMax(prices=prices)
@@ -99,14 +99,14 @@ class Common():
     
     def isAverage(self, now: Pris, prices: List[Pris]) -> bool:
         avg = self.getAverage(prices)
-        return avg * 0.9 <= now.kwh <= avg * 1.1
+        return avg * 0.9 <= now.total <= avg * 1.1
     
     
     def isCheap(self, now: Pris, prices: list[Pris]) -> bool:
-        return now.kwh < 1.45 * self.getMin(prices=prices)
+        return now.total < 1.45 * self.getMin(prices=prices)
     
     def isVeryCheap(self, now: Pris, prices: list[Pris]) -> bool:
-        return now.kwh < 1.2 * self.getMin(prices=prices)
+        return now.total < 1.2 * self.getMin(prices=prices)
     
     def getPriceLevel(self, now: Pris, prices: list[Pris]) -> str:
         if self.isSpreadOk(prices=prices) == False or self.isAverage(now = now, prices=prices):

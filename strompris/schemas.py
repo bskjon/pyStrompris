@@ -34,6 +34,7 @@ class Pris(object):
         self.NOK_kwh = data['NOK_per_kWh']
         self.EUR_kwh = data['EUR_per_kWh']
         self.kwh = round(self.NOK_kwh, 3)
+        self.total = self.kwh
         self.exr = data['EXR']
     
     def __dict__(self):
